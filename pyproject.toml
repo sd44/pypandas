@@ -1,0 +1,27 @@
+[project]
+name = "pypandas"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "sd44",email = "sd44sd44@yeah.net"},
+]
+dependencies = [
+    "pandas>=2.2.3",
+    "qtpy>=2.4.3",
+    "pyside6>=6.11.1",
+    "openpyxl>=3.1.5",
+    "xlrd>=2.0.1",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.scripts]
+pypandas = "app:main"
+
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.scripts]
+pypandas = "python app.py"
