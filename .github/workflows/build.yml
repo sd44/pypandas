@@ -38,7 +38,7 @@ jobs:
           output-file: 墨韩表格工具箱
           company-name: 墨韩
           file-version: 0.1.0beta
-
+          enable-qt-plugins: platforminputcontexts
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:

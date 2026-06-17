@@ -49,7 +49,7 @@ from excel_service import (
 from project_config import ColumnRule, ProjectConfig
 
 
-PROJECT_FILTER = "PyPandas 项目 (*.pypandas.json)"
+PROJECT_FILTER = "PyPandas 配置 (*.pypandas.json)"
 DATA_FILTER = "表格文件 (*.xlsx *.xls *.xlsm *.csv)"
 
 
@@ -88,7 +88,9 @@ class _CheckPopup(QFrame):
                 | Qt.ItemFlag.ItemIsSelectable
             )
             list_item.setCheckState(
-                Qt.CheckState.Checked if original_name in checked else Qt.CheckState.Unchecked
+                Qt.CheckState.Checked
+                if original_name in checked
+                else Qt.CheckState.Unchecked
             )
             self._list.addItem(list_item)
             self._data_map[row] = original_name
@@ -232,7 +234,7 @@ class MainWindow(QMainWindow):
         self.left_panel = QWidget()
         layout = QVBoxLayout(self.left_panel)
 
-        source_group = QGroupBox("项目文件")
+        source_group = QGroupBox("配置文件")
         source_layout = QVBoxLayout(source_group)
         self.file_list = QListWidget()
         self.file_list.itemSelectionChanged.connect(self._handle_file_selection_changed)
@@ -346,7 +348,7 @@ class MainWindow(QMainWindow):
         save_current_button.clicked.connect(self.save_current_file_as)
         split_export_button = QPushButton("按列拆分导出")
         split_export_button.clicked.connect(self.export_split_files)
-        merge_button = QPushButton("合并项目文件")
+        merge_button = QPushButton("合并多个表格")
         merge_button.clicked.connect(self.merge_project_files)
         buttons_layout.addWidget(save_current_button)
         buttons_layout.addWidget(split_export_button)
@@ -358,7 +360,7 @@ class MainWindow(QMainWindow):
         menu_bar = self.menuBar()
 
         file_menu = menu_bar.addMenu("文件")
-        project_menu = menu_bar.addMenu("项目")
+        project_menu = menu_bar.addMenu("配置")
         tools_menu = menu_bar.addMenu("工具")
         help_menu = menu_bar.addMenu("帮助")
 
@@ -366,19 +368,19 @@ class MainWindow(QMainWindow):
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
 
-        self.new_project_action = file_menu.addAction("新建项目")
+        self.new_project_action = file_menu.addAction("新建配置")
         self.new_project_action.triggered.connect(self.new_project)
         toolbar.addAction(self.new_project_action)
 
-        self.open_project_action = file_menu.addAction("打开项目")
+        self.open_project_action = file_menu.addAction("打开配置")
         self.open_project_action.triggered.connect(self.open_project)
         toolbar.addAction(self.open_project_action)
 
-        self.save_project_action = file_menu.addAction("保存项目")
+        self.save_project_action = file_menu.addAction("保存配置")
         self.save_project_action.triggered.connect(self.save_project)
         toolbar.addAction(self.save_project_action)
 
-        self.save_project_as_action = file_menu.addAction("项目另存为")
+        self.save_project_as_action = file_menu.addAction("配置另存为")
         self.save_project_as_action.triggered.connect(self.save_project_as)
 
         file_menu.addSeparator()
@@ -390,7 +392,7 @@ class MainWindow(QMainWindow):
         self.save_current_file_action.triggered.connect(self.save_current_file_as)
 
         file_menu.addSeparator()
-        self.recent_projects_menu = QMenu("最近项目", self)
+        self.recent_projects_menu = QMenu("最近配置", self)
         file_menu.addMenu(self.recent_projects_menu)
         self.recent_files_menu = QMenu("最近文件", self)
         file_menu.addMenu(self.recent_files_menu)
@@ -401,7 +403,7 @@ class MainWindow(QMainWindow):
 
         refresh_action = project_menu.addAction("重新加载当前文件")
         refresh_action.triggered.connect(self.reload_active_file)
-        merge_action = project_menu.addAction("合并项目内文件")
+        merge_action = project_menu.addAction("合并配置内文件")
         merge_action.triggered.connect(self.merge_project_files)
 
         split_action = tools_menu.addAction("按列拆分导出")
@@ -435,17 +437,17 @@ class MainWindow(QMainWindow):
         self._rebuild_file_list()
         self._refresh_columns_table()
         self._update_preview(pd.DataFrame())
-        self._log("已创建新项目")
+        self._log("已创建新配置")
 
     def open_project(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(self, "打开项目", "", PROJECT_FILTER)
+        path, _ = QFileDialog.getOpenFileName(self, "打开配置", "", PROJECT_FILTER)
         if not path:
             return
 
         try:
             self.project_config = ProjectConfig.load(path)
         except Exception as exc:
-            self._show_error(f"打开项目失败：{exc}")
+            self._show_error(f"打开配置失败：{exc}")
             return
 
         self.project_path = path
@@ -453,7 +455,7 @@ class MainWindow(QMainWindow):
         self._rebuild_file_list()
         self._add_recent_item("recent_projects", path)
         self._populate_recent_menus()
-        self._log(f"已打开项目：{path}")
+        self._log(f"已打开配置：{path}")
 
         if self.project_config.active_file:
             self._select_file_in_list(self.project_config.active_file)
@@ -470,12 +472,12 @@ class MainWindow(QMainWindow):
             self.project_config.save(self.project_path)
             self._add_recent_item("recent_projects", self.project_path)
             self._populate_recent_menus()
-            self._log(f"项目已保存：{self.project_path}")
+            self._log(f"配置已保存：{self.project_path}")
         except Exception as exc:
-            self._show_error(f"保存项目失败：{exc}")
+            self._show_error(f"保存配置失败：{exc}")
 
     def save_project_as(self) -> None:
-        path, _ = QFileDialog.getSaveFileName(self, "项目另存为", "", PROJECT_FILTER)
+        path, _ = QFileDialog.getSaveFileName(self, "配置另存为", "", PROJECT_FILTER)
         if not path:
             return
         if not path.endswith(".pypandas.json"):
@@ -572,7 +574,7 @@ class MainWindow(QMainWindow):
     def merge_project_files(self) -> None:
         self._sync_form_to_config()
         if not self.project_config.source_files:
-            self._show_error("项目中没有可合并的文件")
+            self._show_error("配置中没有可合并的文件")
             return
 
         try:
@@ -657,7 +659,7 @@ class MainWindow(QMainWindow):
             self,
             "关于 墨韩表格工具箱",
             "<h3>墨韩表格工具箱</h3>"
-            "<p>支持项目配置保存、标题行识别、列重命名、列筛选、按列拆分导出、"
+            "<p>支持配置保存、标题行识别、列重命名、列筛选、按列拆分导出、"
             "多文件合并、去重与空行清理。</p>"
             "<hr>"
             "<p>本软件使用了以下开源组件：</p>"
@@ -789,9 +791,9 @@ class MainWindow(QMainWindow):
         self.recent_files_menu.setEnabled(True)
         self.recent_projects_menu.setEnabled(True)
         self.status_bar.showMessage(
-            f"项目文件 {len(self.project_config.source_files)} 个"
+            f"配置文件 {len(self.project_config.source_files)} 个"
             if has_files
-            else "未打开项目文件"
+            else "未打开配置文件"
         )
 
     def _sync_form_to_config(self) -> None:
@@ -835,7 +837,9 @@ class MainWindow(QMainWindow):
         for rule in self.project_config.column_rules:
             display = rule.display_name or rule.original_name
             items.append((display, rule.original_name))
-        self.split_column_combo.populate_items(items, set(self.project_config.split_columns))
+        self.split_column_combo.populate_items(
+            items, set(self.project_config.split_columns)
+        )
 
     def _rebuild_file_list(self) -> None:
         self.file_list.clear()
@@ -884,7 +888,7 @@ class MainWindow(QMainWindow):
         return f"{path}.xlsx"
 
     def _add_recent_item(self, key: str, value: str, limit: int = 8) -> None:
-        raw = self.settings.value(key, [], list)
+        raw = self.settings.value(key, [])
         if not isinstance(raw, list):
             raw = []
         current: list[str] = [str(item) for item in raw if isinstance(item, str)]
@@ -896,13 +900,13 @@ class MainWindow(QMainWindow):
         self.recent_projects_menu.clear()
         self.recent_files_menu.clear()
 
-        raw_projects = self.settings.value("recent_projects", [], list)
+        raw_projects = self.settings.value("recent_projects", [])
         recent_projects: list[str] = (
             [str(item) for item in raw_projects if isinstance(item, str)]
             if isinstance(raw_projects, list)
             else []
         )
-        raw_files = self.settings.value("recent_files", [], list)
+        raw_files = self.settings.value("recent_files", [])
         recent_files: list[str] = (
             [str(item) for item in raw_files if isinstance(item, str)]
             if isinstance(raw_files, list)
@@ -928,12 +932,12 @@ class MainWindow(QMainWindow):
 
     def _open_recent_project(self, path: str) -> None:
         if not Path(path).exists():
-            self._show_error(f"项目不存在：{path}")
+            self._show_error(f"配置不存在：{path}")
             return
         try:
             self.project_config = ProjectConfig.load(path)
         except Exception as exc:
-            self._show_error(f"打开项目失败：{exc}")
+            self._show_error(f"打开配置失败：{exc}")
             return
         self.project_path = path
         self._push_config_to_form()
