@@ -6,8 +6,11 @@ Rules-Requires-Root: no
 Build-Depends:
  debhelper-compat (= 13),
  dh-sequence-python3,
+ python3-all,
  python3-setuptools,
- python3,
+ pybuild-plugin-pyproject,
+ python3-wheel,
+ python3-build,
 #Testsuite: autopkgtest-pkg-python
 Standards-Version: 4.7.2
 Homepage: <insert the upstream URL, if relevant>

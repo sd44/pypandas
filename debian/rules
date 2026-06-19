@@ -5,6 +5,8 @@
 #export DH_VERBOSE = 1
 
 export PYBUILD_NAME=mohanxlsx
+export PYBUILD_SYSTEM=pyproject
+export PATH := /usr/bin:/usr/sbin:$(PATH)
 
 %:
 	dh $@ --buildsystem=pybuild

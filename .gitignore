@@ -5,3 +5,17 @@ __pycache__/
 .ruff_cache/
 .pdm-python
 pdm.lock
+build/
+.pybuild/
+
+# Debian packaging
+.pc/
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/*.debhelper
+debian/*.substvars
+debian/python3-mohanxlsx/
+
+# Python egg info
+src/mohanxlsx.egg-info/
