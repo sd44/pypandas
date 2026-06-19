@@ -32,13 +32,13 @@ jobs:
           script-name: src/mohanxlsx/app.py
           mode: onefile
           enable-plugin: pyside6
-          disable-console: true
+          windows-console-mode: disable
           lto: yes
           output-dir: release
           output-file: 墨韩表格工具箱
           company-name: 墨韩
-          file-version: 0.1.0beta
-          enable-qt-plugins: platforminputcontexts
+          file-version: 0.1.2
+          include-qt-plugins: platforminputcontexts
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:
