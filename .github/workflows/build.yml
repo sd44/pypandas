@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-22.04, ubuntu-22.04-arm, windows-2022]
+        os: [macos-latest,  windows-2022]
 
     runs-on: ${{ matrix.os }}
 
@@ -29,7 +29,7 @@ jobs:
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
-          script-name: app.py
+          script-name: src/mohanxlsx/app.py
           mode: onefile
           enable-plugin: pyside6
           disable-console: true
