@@ -4,9 +4,34 @@
 
 ## 运行
 
+### 环境要求
+
+- Python >= 3.12
+- PDM（Python 包管理器）
+
+### 安装与运行
+
 ```bash
+# 克隆仓库
+git clone <repo-url>
+cd mohanxlsx
+
+# 安装依赖
 pdm install
-pdm run pypandas
+
+# 启动应用
+pdm run mohanxlsx
+```
+
+### 其他运行方式
+
+```bash
+# 直接用 Python 运行（需要先激活虚拟环境或已安装依赖）
+eval $(pdm venv activate)
+python -m mohanxlsx
+
+# 或者 pdm run 直接执行模块
+pdm run python -m mohanxlsx
 ```
 
 ## 功能
