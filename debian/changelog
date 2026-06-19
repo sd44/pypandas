@@ -1,5 +1,10 @@
-mohanxlsx (0.1.0-1) UNRELEASED; urgency=medium
+mohanxlsx (0.1.0-1) unstable; urgency=medium
 
+  [ Hoho Sd44 ]
   * Initial release. 
+  * UNRELEASED
 
- -- Hoho Sd44 <sd44sd44@yeah.net>  Fri, 19 Jun 2026 21:22:24 +0800
+  [ sd44 ]
+  * add gbp.conf
+
+ -- Hoho Sd44 <sd44sd44@yeah.net>  Fri, 19 Jun 2026 21:35:54 +0800
