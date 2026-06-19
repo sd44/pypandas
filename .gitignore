@@ -5,3 +5,9 @@ __pycache__/
 .ruff_cache/
 .pdm-python
 pdm.lock
+
+# 构建产物
+.pybuild/
+build/
+dist/
+*.egg-info/

@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Border, Font, Side
 import pandas as pd
 
-from .project_config import ColumnRule
+from project_config import ColumnRule
 
 
 class ExcelServiceError(RuntimeError):

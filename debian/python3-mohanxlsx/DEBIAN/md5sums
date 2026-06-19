@@ -1,0 +1,14 @@
+d6d96b186aa9a6e08bf8a9c9967d9817  usr/bin/pypandas
+c72246579c4437c07cebb86fbcbc6d90  usr/lib/python3/dist-packages/mohanxlsx-0.1.0.dist-info/INSTALLER
+d09804e5ff1b0f3e497c112a80a66932  usr/lib/python3/dist-packages/mohanxlsx-0.1.0.dist-info/METADATA
+ef2c8f2df39dac373c521c2b1220ef39  usr/lib/python3/dist-packages/mohanxlsx-0.1.0.dist-info/WHEEL
+dee092986a149c3a99489fba3d08a309  usr/lib/python3/dist-packages/mohanxlsx-0.1.0.dist-info/entry_points.txt
+cda06d93c9a21ba2c974f1dcf8619e3d  usr/lib/python3/dist-packages/mohanxlsx-0.1.0.dist-info/top_level.txt
+24b270ae82998d985889d14b64955c6d  usr/lib/python3/dist-packages/mohanxlsx/__init__.py
+6dafb8468d1d82b501c30e6de8d41571  usr/lib/python3/dist-packages/mohanxlsx/app.py
+bf664e2140db46860105100a21d41962  usr/lib/python3/dist-packages/mohanxlsx/dataframe_model.py
+71a72c8516b1884aa0cfb48372ffdc2f  usr/lib/python3/dist-packages/mohanxlsx/excel_service.py
+1cc9b61d07b7d6efdf51419a7dc58192  usr/lib/python3/dist-packages/mohanxlsx/main_window.py
+ccbe3096b60b46918462821302622939  usr/lib/python3/dist-packages/mohanxlsx/project_config.py
+f6b2ca399b30bb1862e473a37940c739  usr/share/doc/python3-mohanxlsx/changelog.Debian.gz
+c0241f6638880a3d004b24d45b3d38cf  usr/share/doc/python3-mohanxlsx/copyright

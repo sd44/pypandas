@@ -36,8 +36,8 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtGui import QBrush, QColor, QFont
 
-from .dataframe_model import PandasModel
-from .excel_service import (
+from dataframe_model import PandasModel
+from excel_service import (
     ExcelServiceError,
     apply_column_rules,
     clean_dataframe,
@@ -46,7 +46,7 @@ from .excel_service import (
     merge_files,
     split_and_export,
 )
-from .project_config import ColumnRule, ProjectConfig
+from project_config import ColumnRule, ProjectConfig
 
 
 PROJECT_FILTER = "PyPandas 配置 (*.pypandas.json)"
