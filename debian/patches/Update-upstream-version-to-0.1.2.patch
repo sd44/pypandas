@@ -1,0 +1,21 @@
+From: sd44 <sd44sd44@yeah.net>
+Date: Fri, 19 Jun 2026 23:19:34 +0800
+Subject: Update upstream version to 0.1.2
+
+---
+ pyproject.toml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index ffc0003..f6d0849 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"  # If not defined, then legacy behavi...
+ 
+ [project]
+ name = "mohanxlsx"
+-version = "0.1.0"
++version = "0.1.2"
+ description = "xlsx表格工具箱"
+ authors = [
+     {name = "sd44",email = "sd44sd44@yeah.net"},
