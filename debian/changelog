@@ -1,18 +1,12 @@
 mohanxlsx (0.1.2-1) unstable; urgency=medium
 
   [ sd44 ]
-  * chore(rules): add build-system
-  * Add quilt patch for pyproject.toml build-system changes
-  * Force pybuild to use setuptools system
-  * fix: use explicit relative imports for Debian packaging
-  * drop stale patch: build-system now in upstream
-  * restore empty patches directory
-  * untrack build artifacts
-  * add license && refactory depend
-  * modifiered requiements.txt
-  * Update upstream version to 0.1.2
+  * New upstream version 0.1.2
+  * Update upstream version to 0.1.2 in pyproject.toml
+  * Merge upstream/latest: add LICENSE, refactor dependencies
+  * Add .venv/, .claude/ to gitignore and source diff-ignore
 
- -- Hoho Sd44 <sd44sd44@yeah.net>  Fri, 19 Jun 2026 23:19:53 +0800
+ -- Hoho Sd44 <sd44sd44@yeah.net>  Fri, 19 Jun 2026 23:27:41 +0800
 
 mohanxlsx (0.1.0-1) unstable; urgency=medium
 
