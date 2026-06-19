@@ -1,0 +1,2 @@
+[console_scripts]
+pypandas = mohanxlsx.app:main

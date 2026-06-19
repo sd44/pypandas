@@ -5,8 +5,12 @@ __pycache__/
 .ruff_cache/
 .pdm-python
 pdm.lock
-build/
+
+# 构建产物
 .pybuild/
+build/
+dist/
+*.egg-info/
 
 # Debian packaging
 .pc/
@@ -16,6 +20,3 @@ debian/files
 debian/*.debhelper
 debian/*.substvars
 debian/python3-mohanxlsx/
-
-# Python egg info
-src/mohanxlsx.egg-info/
