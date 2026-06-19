@@ -1,0 +1,38 @@
+Source: mohanxlsx
+Section: python3
+Priority: optional
+Maintainer: Hoho Sd44 <sd44sd44@yeah.net>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-sequence-python3,
+ python3-setuptools,
+ python3-all,
+#Testsuite: autopkgtest-pkg-python
+Standards-Version: 4.7.2
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/mohanxlsx
+#Vcs-Git: https://salsa.debian.org/debian/mohanxlsx.git
+
+Package: python3-mohanxlsx
+Architecture: all
+Depends:
+ ${python3:Depends},
+ ${misc:Depends},
+Suggests:
+ python-mohanxlsx-doc,
+Description: xlsx表格工具箱，支持拆分、合并、去除空行等 (Python 3)
+ 墨韩的xlsx表格工具箱，支持拆分、合并、去除空行等功能。
+ .
+ This package installs the library for Python 3.
+
+# Package: python-mohanxlsx-doc
+# Section: doc
+# Architecture: all
+# Depends:
+#  ${sphinxdoc:Depends},
+#  ${misc:Depends},
+# Description: <insert up to 60 chars description> (common documentation)
+#  <Insert long description, indented with spaces.>
+#  .
+#  This is the common documentation package.
