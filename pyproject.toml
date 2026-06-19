@@ -1,8 +1,15 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "mohanxlsx"
 version = "0.1.0"
 description = "xlsx表格工具箱"
 authors = [
+    {name = "sd44",email = "sd44sd44@yeah.net"},
+]
+maintainers = [
     {name = "sd44",email = "sd44sd44@yeah.net"},
 ]
 dependencies = [
@@ -31,11 +38,9 @@ readme = "README.md"
 license = {text = "MIT"}
 
 [project.scripts]
-pypandas = "app:main"
+pypandas = "mohanxlsx.app:main"
 
-
-[tool.pdm]
-distribution = false
-
-[tool.pdm.scripts]
-pypandas = "python app.py"
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["mohanxlsx"]
+include-package-data = true
