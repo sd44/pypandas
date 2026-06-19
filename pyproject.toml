@@ -10,25 +10,13 @@ authors = [
     {name = "sd44",email = "sd44sd44@yeah.net"},
 ]
 dependencies = [
-    "pandas>=2.2.3",
-    "qtpy>=2.4.3",
-    "pyside6>=6.11.1",
+    "pyside6==6.11.1",
     "openpyxl>=3.1.5",
-    "xlrd>=2.0.1",
-    "et-xmlfile==2.0.0",
-    "numpy==2.4.6",
-    "openpyxl==3.1.5",
-    "packaging==26.2",
     "pandas==3.0.3",
     "pyside6==6.11.1",
     "pyside6-addons==6.11.1",
     "pyside6-essentials==6.11.1",
-    "python-dateutil==2.9.0.post0",
-    "qtpy==2.4.3",
-    "shiboken6==6.11.1",
-    "six==1.17.0",
-    "tzdata==2026.2; sys_platform == \"emscripten\" or sys_platform == \"win32\"",
-    "xlrd==2.0.2",
+    "qtpy>=2.4.3",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -41,3 +29,6 @@ mohanxlsx = "mohanxlsx.app:main"
 package-dir = {"" = "src"}
 packages = ["mohanxlsx"]
 include-package-data = true
+
+[tool.pdm]
+distribution = true
