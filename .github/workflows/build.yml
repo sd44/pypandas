@@ -31,7 +31,7 @@ jobs:
           nuitka-version: main
           script-name: src/mohanxlsx/app.py
           mode: onefile
-          enable-plugin: pyside6
+          enable-plugins: pyside6
           windows-console-mode: disable
           lto: yes
           output-dir: release
