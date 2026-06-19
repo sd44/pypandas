@@ -1,7 +1,7 @@
 [project]
-name = "pypandas"
+name = "mohanxlsx"
 version = "0.1.0"
-description = "Default template for PDM package"
+description = "xlsx表格工具箱"
 authors = [
     {name = "sd44",email = "sd44sd44@yeah.net"},
 ]

@@ -1,9 +1,0 @@
-{
-    "files": [
-        "app.py",
-        "main_window.py",
-        "dataframe_model.py",
-        "excel_service.py",
-        "project_config.py"
-    ]
-}

@@ -31,7 +31,7 @@ jobs:
           nuitka-version: main
           script-name: app.py
           mode: onefile
-          enable-plugins: pyside6
+          enable-plugin: pyside6
           disable-console: true
           lto: yes
           output-dir: release
