@@ -20,3 +20,4 @@ debian/files
 debian/*.debhelper
 debian/*.substvars
 debian/python3-mohanxlsx/
+.venv/
