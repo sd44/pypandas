@@ -1,3 +1,10 @@
+mohanxlsx (0.1.2-6) unstable; urgency=medium
+
+  [ sd44 ]
+  * Expand About dialog with operation guide, emphasizing header row usage
+
+ -- Hoho Sd44 <sd44sd44@yeah.net>  Sat, 20 Jun 2026 15:15:00 +0800
+
 mohanxlsx (0.1.2-5) unstable; urgency=medium
 
   [ sd44 ]
