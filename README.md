@@ -6,8 +6,15 @@
 
 ### 环境要求
 
+- Debian 13 (Trixie) 或更新版本
 - Python >= 3.12
-- PDM（Python 包管理器）
+
+### 安装系统依赖
+
+```bash
+sudo apt install python3-pyside6.qtcore python3-pyside6.qtgui python3-pyside6.qtwidgets \
+  python3-pandas python3-openpyxl python3-qtpy
+```
 
 ### 安装与运行
 
@@ -16,22 +23,14 @@
 git clone <repo-url>
 cd mohanxlsx
 
-# 安装依赖
-pdm install
+# 安装到系统（开发模式）
+pip install --break-system-packages -e .
 
 # 启动应用
-pdm run mohanxlsx
-```
+mohanxlsx
 
-### 其他运行方式
-
-```bash
-# 直接用 Python 运行（需要先激活虚拟环境或已安装依赖）
-eval $(pdm venv activate)
+# 或者直接模块运行
 python -m mohanxlsx
-
-# 或者 pdm run 直接执行模块
-pdm run python -m mohanxlsx
 ```
 
 ## 功能
@@ -59,18 +58,26 @@ pdm run python -m mohanxlsx
 
 ### 构建
 
-推荐使用 **pbuilder** 在干净 chroot 环境中构建，确保依赖版本约束兼容目标 Debian 版本：
+推荐使用 **sbuild** 在干净 chroot 环境中构建，确保依赖版本约束兼容目标 Debian 版本。
+
+首先创建 sbuild chroot（使用 mmdebstrap）：
 
 ```bash
-# 针对 bookworm 构建（生成的包可向前兼容 trixie / sid）
-DIST=bookworm gbp buildpackage --git-pbuilder
+mkdir -p ~/.cache/sbuild
+mmdebstrap --skip=output/dev --variant=buildd --include=eatmydata \
+  unstable ~/.cache/sbuild/unstable-amd64.tar.zst \
+  http://ftp.cn.debian.org/debian \
+  --aptopt='Acquire::http { Proxy "http://127.0.0.1:3142"; }'
+```
 
-# 或指定其他目标版本
-DIST=trixie gbp buildpackage --git-pbuilder
+然后构建：
+
+```bash
+gbp buildpackage --git-builder=sbuild --git-arch=amd64 -d unstable
 ```
 
 > [!IMPORTANT]
-> 直接在宿主机上跑 `gbp buildpackage`（不带 pbuilder）会导致生成的 `.deb` 依赖被锁死在构建环境的精确版本上，换一个 Debian 版本就可能装不上。务必用 pbuilder 做隔离构建。
+> 直接在宿主机上跑不带 sbuild 的构建会导致生成的 `.deb` 依赖被锁死在构建环境的精确版本上，换一个 Debian 版本就可能装不上。务必用 sbuild 做隔离构建。
 
 ### 依赖说明
 
