@@ -11,3 +11,4 @@ pdm.lock
 build/
 dist/
 *.egg-info/
+debian/
