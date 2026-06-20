@@ -59,18 +59,27 @@ pdm run python -m mohanxlsx
 
 ### 构建
 
-推荐使用 **pbuilder** 在干净 chroot 环境中构建，确保依赖版本约束兼容目标 Debian 版本：
+推荐使用 **sbuild** 在干净 chroot 环境中构建，确保依赖版本约束兼容目标 Debian 版本。
+
+首先创建 sbuild chroot（使用 mmdebstrap）：
 
 ```bash
-# 针对 bookworm 构建（生成的包可向前兼容 trixie / sid）
-DIST=bookworm gbp buildpackage --git-pbuilder
+mkdir -p ~/.cache/sbuild
+mmdebstrap --skip=output/dev --variant=buildd --include=eatmydata \
+  unstable ~/.cache/sbuild/unstable-amd64.tar.zst \
+  http://ftp.cn.debian.org/debian \
+  --aptopt='Acquire::http { Proxy "http://127.0.0.1:3142"; }'
+```
 
-# 或指定其他目标版本
-DIST=trixie gbp buildpackage --git-pbuilder
+然后构建：
+
+```bash
+# 使用 sbuild 在干净 chroot 中构建
+gbp buildpackage --git-builder=sbuild --git-arch=amd64 -d unstable
 ```
 
 > [!IMPORTANT]
-> 直接在宿主机上跑 `gbp buildpackage`（不带 pbuilder）会导致生成的 `.deb` 依赖被锁死在构建环境的精确版本上，换一个 Debian 版本就可能装不上。务必用 pbuilder 做隔离构建。
+> 直接在宿主机上跑不带 sbuild 的构建会导致生成的 `.deb` 依赖被锁死在构建环境的精确版本上，换一个 Debian 版本就可能装不上。务必用 sbuild 做隔离构建。
 
 ### 依赖说明
 
