@@ -20,6 +20,9 @@ Homepage: <insert the upstream URL, if relevant>
 Package: python3-mohanxlsx
 Architecture: all
 Depends:
+ python3-pandas,
+ python3-openpyxl,
+ python3-qtpy,
  ${python3:Depends},
  ${misc:Depends},
 Description: xlsx表格工具箱，支持拆分、合并、去除空行等 (Python 3)

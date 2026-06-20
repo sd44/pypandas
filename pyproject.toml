@@ -4,19 +4,18 @@ build-backend = "setuptools.build_meta"  # If not defined, then legacy behavi...
 
 [project]
 name = "mohanxlsx"
-version = "0.1.0"
+version = "0.1.2"
 description = "xlsx表格工具箱"
 authors = [
     {name = "sd44",email = "sd44sd44@yeah.net"},
 ]
 dependencies = [
-    "pyside6==6.11.1",
+    "pyside6>=6.8",
+    "pyside6-addons>=6.8",
+    "pyside6-essentials>=6.8",
     "openpyxl>=3.1.5",
-    "pandas==3.0.3",
-    "pyside6==6.11.1",
-    "pyside6-addons==6.11.1",
-    "pyside6-essentials==6.11.1",
-    "qtpy>=2.4.3",
+    "pandas>=2.0",
+    "qtpy>=2.4",
 ]
 requires-python = ">=3.12"
 readme = "README.md"

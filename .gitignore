@@ -12,7 +12,7 @@ build/
 dist/
 *.egg-info/
 
-# Debian packaging
+# Debian 打包忽略构建产物（debian/ 源文件如 control/rules/copyright 仍需追踪）
 .pc/
 debian/.debhelper/
 debian/debhelper-build-stamp

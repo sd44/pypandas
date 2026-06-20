@@ -1,3 +1,19 @@
+mohanxlsx (0.1.2-3) unstable; urgency=medium
+
+  [ sd44 ]
+  * Merge upstream/latest: UI improvements and packaging fixes
+  * Add explicit Depends for key Python packages in debian/control
+  * Loosen version pins in pyproject.toml (== → >=) for cross-version compat
+  * Add Debian packaging docs and pbuilder build instructions to README
+  * Remove build artifacts from upstream/latest, add debian/ to .gitignore
+  * Drop requirements.txt in favor of pyproject.toml dependencies
+  * Add right-click "设为标题行" feature to data preview table
+  * Move merge and split-export buttons to left panel; remove refresh button
+  * Add help tab with QTextBrowser documentation
+  * CI: add ubuntu-latest runner, use pip install . instead of requirements.txt
+
+ -- Hoho Sd44 <sd44sd44@yeah.net>  Sat, 20 Jun 2026 11:00:00 +0800
+
 mohanxlsx (0.1.2-1) unstable; urgency=medium
 
   [ sd44 ]
