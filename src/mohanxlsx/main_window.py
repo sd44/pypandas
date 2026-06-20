@@ -704,21 +704,40 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "导出完成", f"已生成 {len(exported)} 个文件")
 
     def show_about(self) -> None:
-        QMessageBox.information(
-            self,
-            "关于 墨韩表格工具箱",
-            "<h3>墨韩表格工具箱</h3>"
-            "<p>支持配置保存、标题行识别、列重命名、列筛选、按列拆分导出、"
-            "多文件合并、去重与空行清理。</p>"
+        msg = QMessageBox(self)
+        msg.setWindowTitle("关于 墨韩表格工具箱")
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setText(
+            "<h2>墨韩表格工具箱</h2>"
+            "<p>版本 0.1.2 &mdash; xlsx 表格拆分、合并、清洗工具</p>"
             "<hr>"
-            "<p>本软件使用了以下开源组件：</p>"
-            "<p><b><a href='https://www.qt.io/'>Qt</a></b> &mdash; The Qt Company Ltd<br>"
-            "Qt 是跨平台应用程序开发框架，采用 "
-            "<a href='https://www.gnu.org/licenses/lgpl-3.0.html'>GNU LGPL v3</a> 授权。</p>"
-            "<p><b>PySide6</b> &mdash; The Qt Company Ltd<br>"
-            "Qt for Python (PySide6) 是 Qt 的官方 Python 绑定，采用 "
-            "<a href='https://www.gnu.org/licenses/lgpl-3.0.html'>GNU LGPL v3</a> 授权。</p>",
+            "<h3>操作指南</h3>"
+            "<ol>"
+            "<li><b>设定标题行</b> —— 标题行即 Excel 中作为列名的那一行。"
+            "软件默认以第 1 行为标题行，有两种方式调整：<br>"
+            "&nbsp;&nbsp;① 左侧<b>「标题所在行」</b>数字框，填入真正标题所在的行号（如第 3 行就是 3）；<br>"
+            "&nbsp;&nbsp;② 在<b>数据预览</b>表格中，右键点击真正的标题行，选择<b>「设为标题行」</b>，"
+            "该行立即提升为列名，其上方所有数据行被移除。<br>"
+            "<b>常见场景：</b>报表文件前几行往往是说明文字、空行或合并单元格，"
+            "真正的列名在第 3~5 行。此时右键一键设定即可。</li>"
+            "<li><b>添加文件</b> —— 点击「添加文件」加载 .xlsx / .xls / .csv，"
+            "左侧文件列表可多选切换。</li>"
+            "<li><b>列配置</b> —— 在「列配置」标签页中，可取消勾选不需要的列，"
+            "或双击「新列名」列进行重命名。</li>"
+            "<li><b>合并表格</b> —— 将所有已添加的文件纵向拼接为一个表格。</li>"
+            "<li><b>拆分导出</b> —— 选中拆分列后点击「按列拆分导出」，"
+            "按列值的不同分组各自输出为独立文件。</li>"
+            "<li><b>数据清洗</b> —— 勾选「移除全空行」「去除重复行」自动生效；"
+            "「排序列」可按指定列排序。</li>"
+            "<li><b>配置保存</b> —— 文件→保存配置，所有参数和文件列表可恢复。</li>"
+            "</ol>"
+            "<hr>"
+            "<p><b>开源组件：</b>"
+            "<a href='https://www.qt.io/'>Qt</a> / "
+            "<a href='https://wiki.qt.io/Qt_for_Python'>PySide6</a> "
+            "&mdash; <a href='https://www.gnu.org/licenses/lgpl-3.0.html'>GNU LGPL v3</a></p>"
         )
+        msg.exec_()
 
     def _handle_file_selection_changed(self) -> None:
         selected_items = self.file_list.selectedItems()
