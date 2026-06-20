@@ -30,7 +30,6 @@ from qtpy.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
-    QTextBrowser,
     QToolBar,
     QVBoxLayout,
     QWidget,
@@ -42,7 +41,6 @@ from .excel_service import (
     ExcelServiceError,
     apply_column_rules,
     clean_dataframe,
-    deduplicate_headers,
     export_dataframe,
     load_prepared_dataframe,
     merge_files,
@@ -53,48 +51,6 @@ from .project_config import ColumnRule, ProjectConfig
 
 PROJECT_FILTER = "PyPandas 配置 (*.pypandas.json)"
 DATA_FILTER = "表格文件 (*.xlsx *.xls *.xlsm *.csv)"
-
-HELP_HTML = """
-<h2>墨韩表格工具箱 使用帮助</h2>
-
-<h3>标题行</h3>
-<p>标题行是 Excel 表格中作为列名的那一行。软件默认以第 1 行为标题行，你可以通过以下两种方式调整：</p>
-<ol>
-  <li><b>数字框设置：</b>在处理参数中修改<b>「标题所在行」</b>的数字（如填 3 表示第 3 行是标题），修改后预览会自动刷新。</li>
-  <li><b>右键设为标题行：</b>在<b>数据预览</b>表格中，右键点击你希望成为列名的数据行，选择<b>「设为标题行」</b>。该行会自动提升为列名，该行及之前的所有行将从数据中移除。</li>
-</ol>
-<p><b>常见场景：</b>有些 Excel 文件前几行是报表说明、空行或合并单元格，真正的列名在第 3、4 行。此时只需在数据预览中右键点击真正的标题行即可一键修正。</p>
-
-<h3>表格文件</h3>
-<p>点击<b>「添加文件」</b>将待处理的 Excel/CSV 文件加入列表。支持 .xlsx、.xls、.xlsm、.csv 格式。选中文件后自动加载预览。</p>
-
-<h3>处理参数</h3>
-<ul>
-  <li><b>工作表名：</b>指定读取哪个工作表，留空表示第一个。</li>
-  <li><b>输出目录 / 输出前缀 / 导出格式：</b>控制拆分导出时的文件路径、文件名前缀和格式。</li>
-  <li><b>合并多个表格：</b>将当前配置中所有文件按相同结构纵向拼接为一个表格。</li>
-  <li><b>拆分列：</b>选择一列或多列作为分组依据，每个分组值导出为独立文件。</li>
-  <li><b>拆分值过滤：</b>只导出匹配指定值的分组，每行一个值，留空导出全部。</li>
-  <li><b>排序列：</b>按某列对数据排序，留空不排序。</li>
-  <li><b>移除全空行 / 去除重复行：</b>数据清洗选项，勾选后自动生效。</li>
-</ul>
-
-<h3>列配置</h3>
-<p>在<b>「列配置」</b>标签页中：</p>
-<ul>
-  <li><b>保留</b>列：取消勾选可在导出时排除该列。</li>
-  <li><b>新列名</b>列：双击可重命名列，导出的文件将使用新列名。</li>
-</ul>
-
-<h3>导出</h3>
-<ul>
-  <li><b>导出当前结果：</b>将当前预览的数据导出为单个文件。</li>
-  <li><b>按列拆分导出：</b>根据拆分列将数据分组导出为多个文件。</li>
-</ul>
-
-<h3>配置管理</h3>
-<p>通过<b>「文件」</b>菜单或工具栏可新建、打开、保存配置（.pypandas.json）。配置会记住所有参数设置和文件列表，下次打开即可恢复工作状态。</p>
-"""
 
 
 class _CheckPopup(QFrame):
@@ -278,7 +234,7 @@ class MainWindow(QMainWindow):
         self.left_panel = QWidget()
         layout = QVBoxLayout(self.left_panel)
 
-        source_group = QGroupBox("表格文件")
+        source_group = QGroupBox("配置文件")
         source_layout = QVBoxLayout(source_group)
         self.file_list = QListWidget()
         self.file_list.itemSelectionChanged.connect(self._handle_file_selection_changed)
@@ -324,10 +280,6 @@ class MainWindow(QMainWindow):
         self.export_format_combo.addItems(["xlsx", "csv", "xlsm"])
         settings_layout.addRow("导出格式", self.export_format_combo)
 
-        merge_button = QPushButton("合并多个表格")
-        merge_button.clicked.connect(self.merge_project_files)
-        settings_layout.addRow("", merge_button)
-
         self.split_column_combo = CheckableComboBox()
         settings_layout.addRow("拆分列", self.split_column_combo)
 
@@ -335,10 +287,6 @@ class MainWindow(QMainWindow):
         self.split_values_edit.setPlaceholderText("可选：只导出这些值，每行一个")
         self.split_values_edit.setFixedHeight(90)
         settings_layout.addRow("拆分值过滤", self.split_values_edit)
-
-        split_button = QPushButton("按列拆分导出")
-        split_button.clicked.connect(self.export_split_files)
-        settings_layout.addRow("", split_button)
 
         self.sort_column_edit = QLineEdit()
         self.sort_column_edit.setPlaceholderText("可选：排序列")
@@ -350,6 +298,10 @@ class MainWindow(QMainWindow):
 
         self.drop_duplicates_check = QCheckBox("去除重复行")
         settings_layout.addRow("", self.drop_duplicates_check)
+
+        apply_button = QPushButton("刷新预览")
+        apply_button.clicked.connect(self.reload_active_file)
+        settings_layout.addRow("", apply_button)
 
         layout.addWidget(settings_group)
         layout.addStretch(1)
@@ -371,8 +323,6 @@ class MainWindow(QMainWindow):
         self.table_view.setSelectionBehavior(
             QAbstractItemView.SelectionBehavior.SelectRows
         )
-        self.table_view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.table_view.customContextMenuRequested.connect(self._on_table_context_menu)
         self.table_view.horizontalHeader().setStretchLastSection(True)
         self.table_model = PandasModel()
         self.table_view.setModel(self.table_model)
@@ -393,15 +343,16 @@ class MainWindow(QMainWindow):
         self.log_edit.setReadOnly(True)
         preview_tabs.addTab(self.log_edit, "日志")
 
-        help_browser = QTextBrowser()
-        help_browser.setOpenExternalLinks(True)
-        help_browser.setHtml(HELP_HTML)
-        preview_tabs.addTab(help_browser, "帮助")
-
         buttons_layout = QHBoxLayout()
         save_current_button = QPushButton("导出当前结果")
         save_current_button.clicked.connect(self.save_current_file_as)
+        split_export_button = QPushButton("按列拆分导出")
+        split_export_button.clicked.connect(self.export_split_files)
+        merge_button = QPushButton("合并多个表格")
+        merge_button.clicked.connect(self.merge_project_files)
         buttons_layout.addWidget(save_current_button)
+        buttons_layout.addWidget(split_export_button)
+        buttons_layout.addWidget(merge_button)
         buttons_layout.addStretch(1)
         layout.addLayout(buttons_layout)
 
@@ -452,7 +403,7 @@ class MainWindow(QMainWindow):
 
         refresh_action = project_menu.addAction("重新加载当前文件")
         refresh_action.triggered.connect(self.reload_active_file)
-        merge_action = project_menu.addAction("合并表格")
+        merge_action = project_menu.addAction("合并配置内文件")
         merge_action.triggered.connect(self.merge_project_files)
 
         split_action = tools_menu.addAction("按列拆分导出")
@@ -623,7 +574,7 @@ class MainWindow(QMainWindow):
     def merge_project_files(self) -> None:
         self._sync_form_to_config()
         if not self.project_config.source_files:
-            self._show_error("表格文件中没有添加文件")
+            self._show_error("配置中没有可合并的文件")
             return
 
         try:
@@ -741,33 +692,6 @@ class MainWindow(QMainWindow):
         self.project_config.header_row = value
         if self.project_config.active_file:
             self.reload_active_file()
-
-    def _on_table_context_menu(self, pos: QPoint) -> None:
-        index = self.table_view.indexAt(pos)
-        if not index.isValid():
-            return
-        menu = QMenu(self)
-        set_header_action = menu.addAction("设为标题行")
-        action = menu.exec_(self.table_view.viewport().mapToGlobal(pos))
-        if action == set_header_action:
-            self._set_row_as_header(index.row())
-
-    def _set_row_as_header(self, row: int) -> None:
-        if self.current_original_df.empty:
-            return
-        if row >= len(self.current_original_df):
-            return
-
-        new_headers = self.current_original_df.iloc[row].tolist()
-        new_df = self.current_original_df.iloc[row + 1:].reset_index(drop=True).copy()
-        new_df.columns = deduplicate_headers(new_headers)
-
-        self.current_original_df = new_df
-        self.project_config.sync_columns([str(c) for c in new_df.columns])
-        self._refresh_columns_table()
-        self._populate_split_combo()
-        self._refresh_preview_from_current()
-        self._log(f"已将第 {row + 1} 行设为标题行")
 
     def _collect_column_rules_from_table(self) -> None:
         rules: list[ColumnRule] = []

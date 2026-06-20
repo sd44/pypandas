@@ -36,7 +36,7 @@ def build_dataframe(raw_df: pd.DataFrame, header_row: int) -> pd.DataFrame:
 
     header_index = max(0, min(header_row - 1, len(raw_df.index) - 1))
     raw_headers = raw_df.iloc[header_index].tolist()
-    columns = deduplicate_headers(raw_headers)
+    columns = _deduplicate_headers(raw_headers)
 
     dataframe = raw_df.iloc[header_index + 1 :].reset_index(drop=True).copy()
     dataframe.columns = columns
@@ -174,7 +174,7 @@ def merge_files(
     )
 
 
-def deduplicate_headers(headers: list[object]) -> list[str]:
+def _deduplicate_headers(headers: list[object]) -> list[str]:
     counts: dict[str, int] = {}
     result: list[str] = []
 
