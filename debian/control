@@ -16,7 +16,7 @@ Build-Depends:
  python3-build,
 #Testsuite: autopkgtest-pkg-python
 Standards-Version: 4.7.2
-Homepage: <insert the upstream URL, if relevant>
+Homepage: https://github.com/sd44/pypandas
 #Vcs-Browser: https://salsa.debian.org/debian/mohanxlsx
 #Vcs-Git: https://salsa.debian.org/debian/mohanxlsx.git
 
