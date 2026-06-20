@@ -32,7 +32,7 @@ _setup_input_method()
 from qtpy.QtCore import QTranslator, QLocale, QLibraryInfo
 from qtpy.QtWidgets import QApplication
 
-from .main_window import MainWindow
+from mohanxlsx.main_window import MainWindow
 
 
 def main() -> int:
