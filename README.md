@@ -6,8 +6,15 @@
 
 ### 环境要求
 
+- Debian 13 (Trixie) 或更新版本
 - Python >= 3.12
-- PDM（Python 包管理器）
+
+### 安装系统依赖
+
+```bash
+sudo apt install python3-pyside6.qtcore python3-pyside6.qtgui python3-pyside6.qtwidgets \
+  python3-pandas python3-openpyxl python3-qtpy
+```
 
 ### 安装与运行
 
@@ -16,22 +23,14 @@
 git clone <repo-url>
 cd mohanxlsx
 
-# 安装依赖
-pdm install
+# 安装到系统（开发模式）
+pip install --break-system-packages -e .
 
 # 启动应用
-pdm run mohanxlsx
-```
+mohanxlsx
 
-### 其他运行方式
-
-```bash
-# 直接用 Python 运行（需要先激活虚拟环境或已安装依赖）
-eval $(pdm venv activate)
+# 或者直接模块运行
 python -m mohanxlsx
-
-# 或者 pdm run 直接执行模块
-pdm run python -m mohanxlsx
 ```
 
 ## 功能
@@ -74,7 +73,6 @@ mmdebstrap --skip=output/dev --variant=buildd --include=eatmydata \
 然后构建：
 
 ```bash
-# 使用 sbuild 在干净 chroot 中构建
 gbp buildpackage --git-builder=sbuild --git-arch=amd64 -d unstable
 ```
 
