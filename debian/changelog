@@ -1,3 +1,12 @@
+mohanxlsx (0.1.3-1) unstable; urgency=medium
+
+  [ sd44 ]
+  * Fix Nuitka onefile relative import error in app.py
+  * add app icon && delete setup_input_method
+  * Rediff patches
+
+ -- Hoho Sd44 <sd44sd44@yeah.net>  Sun, 21 Jun 2026 02:33:30 +0800
+
 mohanxlsx (0.1.2-7) unstable; urgency=medium
 
   [ sd44 ]
