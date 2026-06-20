@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=墨韩表格工具箱
+Comment=xlsx 表格工具箱，支持拆分、合并、去除空行等
+Exec=mohanxlsx
+Icon=mohanxlsx
+Terminal=false
+Type=Application
+Categories=Office;Spreadsheet;
+Keywords=excel;spreadsheet;xlsx;csv;表格;

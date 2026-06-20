@@ -1,3 +1,13 @@
+mohanxlsx (0.1.2-5) unstable; urgency=medium
+
+  [ sd44 ]
+  * Add application icon (SVG) and Desktop Entry
+  * Install .desktop file to /usr/share/applications/
+  * Install icon to /usr/share/icons/hicolor/scalable/apps/
+  * Fix README: replace pbuilder with sbuild instructions
+
+ -- Hoho Sd44 <sd44sd44@yeah.net>  Sat, 20 Jun 2026 12:00:00 +0800
+
 mohanxlsx (0.1.2-4) unstable; urgency=medium
 
   [ sd44 ]
