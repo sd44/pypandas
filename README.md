@@ -29,8 +29,8 @@ pip install --break-system-packages -e .
 # 启动应用
 mohanxlsx
 
-# 或者直接模块运行
-python -m mohanxlsx
+# 或者
+python -m mohanxlsx.app
 ```
 
 ## 功能

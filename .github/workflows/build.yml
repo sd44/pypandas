@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -38,6 +38,8 @@ jobs:
           company-name: 墨韩
           file-version: 0.1.2
           include-qt-plugins: platforminputcontexts
+          windows-icon-from-ico: ${{ runner.os == 'Windows' && 'src/mohanxlsx/mohanxlsx.ico' || '' }}
+          macos-app-icon: ${{ runner.os == 'macOS' && 'src/mohanxlsx/mohanxlsx.icns' || '' }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:

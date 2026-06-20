@@ -5,6 +5,7 @@ __pycache__/
 .ruff_cache/
 .pdm-python
 pdm.lock
+.pc/
 
 # 构建产物
 .pybuild/
@@ -22,3 +23,4 @@ debian/*.substvars
 debian/python3-mohanxlsx/
 .venv/
 .claude/
+release/
