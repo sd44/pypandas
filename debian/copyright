@@ -1,16 +1,19 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Source: https://github.com/sd44sd44/mohanxlsx
-Upstream-Name: mohanxlsx
-Upstream-Contact: sd44 <sd44sd44@yeah.net>
+Upstream-Name: mohan-0.13
+Upstream-Contact: <preferred name and address to reach the upstream project>
+Source: <url://example.com>
 
-Files:
- *
-Copyright:
- 2026 Hoho Sd44 <sd44sd44@yeah.net>
+Files: *
+Copyright: <years> <put author's name and email here>
+           <years> <likewise for another author>
+License: GPL-3.0+
+
+Files: debian/*
+Copyright: 2026 Hoho Sd44 <sd44sd44@yeah.net>
 License: GPL-3.0+
 
 License: GPL-3.0+
- This package is free software: you can redistribute it and/or modify
+ This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
@@ -21,8 +24,8 @@ License: GPL-3.0+
  GNU General Public License for more details.
  .
  You should have received a copy of the GNU General Public License
- along with this package. If not, see <https://www.gnu.org/licenses/>.
-Comment:
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+ .
  On Debian systems, the complete text of the GNU General
  Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 

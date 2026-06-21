@@ -1,37 +1,22 @@
-Source: mohanxlsx
-Section: python3
+Source: mohan-0.13
+Section: utils
 Priority: optional
 Maintainer: Hoho Sd44 <sd44sd44@yeah.net>
-Rules-Requires-Root: no
-Build-Depends:
- debhelper-compat (= 13),
- dh-sequence-python3,
- python3-all,
- python3-setuptools,
- python3-pyside6.qtcore,
- python3-pyside6.qtgui,
- python3-pyside6.qtwidgets,
- pybuild-plugin-pyproject,
- python3-wheel,
- python3-build,
-#Testsuite: autopkgtest-pkg-python
-Standards-Version: 4.7.2
+Build-Depends: 
+ debhelper-compat (= 12),
+ dh-python,
+ python3-setuptools,                                                                                
+ python3-wheel
 Homepage: https://github.com/sd44/pypandas
-#Vcs-Browser: https://salsa.debian.org/debian/mohanxlsx
-#Vcs-Git: https://salsa.debian.org/debian/mohanxlsx.git
 
 Package: python3-mohanxlsx
-Architecture: all
-Depends:
- python3-pandas,
- python3-openpyxl,
- python3-qtpy,
- python3-pyside6.qtcore,
- python3-pyside6.qtgui,
- python3-pyside6.qtwidgets,
- ${python3:Depends},
- ${misc:Depends},
-Description: xlsx表格工具箱，支持拆分、合并、去除空行等 (Python 3)
- 墨韩的xlsx表格工具箱，支持拆分、合并、去除空行等功能。
- .
- This package installs the library for Python 3.
+Architecture: all                                                                               
+Depends:                                                                                        
+ python3-pandas,                                                                                
+ python3-openpyxl,                                                                              
+ python3-qtpy,                                                                                  
+ python3-pyside2.qtcore,                                                                        
+ python3-pyside2.qtgui,                                                                         
+ python3-pyside2.qtwidgets                                                                      
+Description: xlsx表格工具箱，支持拆分、合并、去除空行等 (Python 3)                              
+ 墨韩的xlsx表格工具箱，支持拆分、合并、去除空行等功能。                                         
