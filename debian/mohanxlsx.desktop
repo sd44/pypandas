@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=墨韩表格工具箱
+Name[en]=MohanXlsx
+Comment=xlsx表格工具箱，支持拆分、合并、去除空行等
+Comment[en]=XLSX toolbox supporting split, merge, remove empty rows etc.
+Exec=mohanxlsx
+Icon=mohanxlsx
+Terminal=false
+Type=Application
+Categories=Office;Spreadsheet;Qt;
+StartupNotify=true

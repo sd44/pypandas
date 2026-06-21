@@ -21,8 +21,11 @@ def main() -> int:
         app.setWindowIcon(QIcon(str(icon_path)))
 
     translator = QTranslator()
-    # 获取 Qt 安装的 translations 目录路径
-    translations_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+    # 获取 Qt 安装的 translations 目录路径 (兼容 PySide2/Qt5 和 PySide6/Qt6)
+    try:
+        translations_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+    except AttributeError:
+        translations_path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
     translator.load(QLocale(), "qtbase", "_", translations_path)
     app.installTranslator(translator)
 
