@@ -36,7 +36,6 @@ class ProjectConfig:
     export_format: str = "xlsx"
     split_columns: list[str] = field(default_factory=list)
     split_values: list[str] = field(default_factory=list)
-    sort_column: str = ""
     drop_duplicates: bool = False
     remove_empty_rows: bool = True
     column_rules: list[ColumnRule] = field(default_factory=list)
@@ -55,8 +54,6 @@ class ProjectConfig:
         self.column_rules = synced
         if self.split_columns:
             self.split_columns = [c for c in self.split_columns if c in columns]
-        if self.sort_column not in columns:
-            self.sort_column = ""
 
     def to_dict(self) -> dict:
         data = asdict(self)
@@ -76,7 +73,6 @@ class ProjectConfig:
             export_format=payload.get("export_format", "xlsx"),
             split_columns=_coerce_split_columns(payload),
             split_values=payload.get("split_values", []),
-            sort_column=payload.get("sort_column", ""),
             drop_duplicates=bool(payload.get("drop_duplicates", False)),
             remove_empty_rows=bool(payload.get("remove_empty_rows", True)),
             column_rules=rules,

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 import sys
 
 from qtpy.QtGui import QIcon
-from qtpy.QtCore import QTranslator, QLocale, QLibraryInfo
+from qtpy.QtCore import QTranslator, QLibraryInfo
 from qtpy.QtWidgets import QApplication
 
 from mohanxlsx.main_window import MainWindow
@@ -21,9 +20,9 @@ def main() -> int:
         app.setWindowIcon(QIcon(str(icon_path)))
 
     translator = QTranslator()
-    # 获取 Qt 安装的 translations 目录路径
+    # 显式加载中文翻译，避免依赖运行环境 locale 导致标准右键菜单仍为英文。
     translations_path = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
-    translator.load(QLocale(), "qtbase", "_", translations_path)
+    translator.load("qtbase_zh_CN", translations_path)
     app.installTranslator(translator)
 
     window = MainWindow()

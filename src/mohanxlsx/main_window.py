@@ -37,7 +37,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtGui import QBrush, QColor, QFont
 
-from .dataframe_model import PandasModel
+from .dataframe_model import DataFrameSortProxyModel, PandasModel
 from .excel_service import (
     ExcelServiceError,
     apply_column_rules,
@@ -75,7 +75,7 @@ HELP_HTML = """
   <li><b>合并多个表格：</b>将当前配置中所有文件按相同结构纵向拼接为一个表格。</li>
   <li><b>拆分列：</b>选择一列或多列作为分组依据，每个分组值导出为独立文件。</li>
   <li><b>拆分值过滤：</b>只导出匹配指定值的分组，每行一个值，留空导出全部。</li>
-  <li><b>排序列：</b>按某列对数据排序，留空不排序。</li>
+  <li><b>点击列标题排序：</b>在数据预览中点击列标题，可按该列升序/降序切换排序。</li>
   <li><b>移除全空行 / 去除重复行：</b>数据清洗选项，勾选后自动生效。</li>
 </ul>
 
@@ -247,6 +247,8 @@ class MainWindow(QMainWindow):
         self.project_path: str = ""
         self.current_original_df = pd.DataFrame()
         self.current_view_df = pd.DataFrame()
+        self._sorted_column: int | None = None
+        self._sort_order = Qt.SortOrder.AscendingOrder
         self._updating_columns_table = False
         self._building_recent_menus = False
 
@@ -340,10 +342,6 @@ class MainWindow(QMainWindow):
         split_button.clicked.connect(self.export_split_files)
         settings_layout.addRow("", split_button)
 
-        self.sort_column_edit = QLineEdit()
-        self.sort_column_edit.setPlaceholderText("可选：排序列")
-        settings_layout.addRow("排序列", self.sort_column_edit)
-
         self.remove_empty_rows_check = QCheckBox("移除全空行")
         self.remove_empty_rows_check.setChecked(True)
         settings_layout.addRow("", self.remove_empty_rows_check)
@@ -373,9 +371,15 @@ class MainWindow(QMainWindow):
         )
         self.table_view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.table_view.customContextMenuRequested.connect(self._on_table_context_menu)
-        self.table_view.horizontalHeader().setStretchLastSection(True)
+        header = self.table_view.horizontalHeader()
+        header.setSectionsClickable(True)
+        header.setSortIndicatorShown(False)
+        header.sectionClicked.connect(self._handle_table_header_clicked)
+        header.setStretchLastSection(True)
         self.table_model = PandasModel()
-        self.table_view.setModel(self.table_model)
+        self.table_proxy_model = DataFrameSortProxyModel(self)
+        self.table_proxy_model.setSourceModel(self.table_model)
+        self.table_view.setModel(self.table_proxy_model)
         preview_layout.addWidget(self.table_view)
         preview_tabs.addTab(preview_widget, "数据预览")
 
@@ -499,6 +503,7 @@ class MainWindow(QMainWindow):
             self._show_error(f"打开配置失败：{exc}")
             return
 
+        self._normalize_project_paths()
         self.project_path = path
         self._push_config_to_form()
         self._rebuild_file_list()
@@ -538,6 +543,7 @@ class MainWindow(QMainWindow):
         files, _ = QFileDialog.getOpenFileNames(self, "打开表格文件", "", DATA_FILTER)
         if not files:
             return
+        files = [file_path.strip() for file_path in files if file_path.strip()]
 
         existing = list(self.project_config.source_files)
         for file_path in files:
@@ -592,9 +598,13 @@ class MainWindow(QMainWindow):
 
     def reload_active_file(self) -> None:
         self._sync_form_to_config()
-        active_file = self.project_config.active_file
+        active_file = self.project_config.active_file.strip()
+        self.project_config.active_file = active_file
         if not active_file:
             self._show_error("请先打开一个表格文件")
+            return
+        if not self._path_exists(active_file):
+            self._show_error(f"文件不存在或路径无效：{active_file}")
             return
 
         try:
@@ -607,7 +617,6 @@ class MainWindow(QMainWindow):
                 dataframe,
                 remove_empty_rows=self.project_config.remove_empty_rows,
                 drop_duplicates=self.project_config.drop_duplicates,
-                sort_column=self.project_config.sort_column,
             )
         except ExcelServiceError as exc:
             self._show_error(str(exc))
@@ -633,7 +642,6 @@ class MainWindow(QMainWindow):
                 sheet_name=self.project_config.sheet_name,
                 remove_empty_rows=self.project_config.remove_empty_rows,
                 drop_duplicates=self.project_config.drop_duplicates,
-                sort_column=self.project_config.sort_column,
             )
         except ExcelServiceError as exc:
             self._show_error(str(exc))
@@ -661,9 +669,8 @@ class MainWindow(QMainWindow):
             return
         path = self._ensure_export_suffix(path, selected_filter)
 
-        self._refresh_preview_from_current()
         try:
-            export_dataframe(self.current_view_df, path)
+            export_dataframe(self._current_sorted_view_df(), path)
             self._log(f"已导出当前结果：{path}")
         except ExcelServiceError as exc:
             self._show_error(str(exc))
@@ -728,7 +735,7 @@ class MainWindow(QMainWindow):
             "<li><b>拆分导出</b> —— 选中拆分列后点击「按列拆分导出」，"
             "按列值的不同分组各自输出为独立文件。</li>"
             "<li><b>数据清洗</b> —— 勾选「移除全空行」「去除重复行」自动生效；"
-            "「排序列」可按指定列排序。</li>"
+            "点击数据预览区的列标题，可按该列升序或降序排序。</li>"
             "<li><b>配置保存</b> —— 文件→保存配置，所有参数和文件列表可恢复。</li>"
             "</ol>"
             "<hr>"
@@ -761,6 +768,24 @@ class MainWindow(QMainWindow):
         if self.project_config.active_file:
             self.reload_active_file()
 
+    def _handle_table_header_clicked(self, section: int) -> None:
+        header = self.table_view.horizontalHeader()
+        if self._sorted_column != section:
+            self._sorted_column = section
+            self._sort_order = Qt.SortOrder.AscendingOrder
+        elif self._sort_order == Qt.SortOrder.AscendingOrder:
+            self._sort_order = Qt.SortOrder.DescendingOrder
+        else:
+            self._sorted_column = None
+            self._sort_order = Qt.SortOrder.AscendingOrder
+            self.table_proxy_model.sort(-1)
+            header.setSortIndicatorShown(False)
+            return
+
+        self.table_proxy_model.sort(section, self._sort_order)
+        header.setSortIndicatorShown(True)
+        header.setSortIndicator(section, self._sort_order)
+
     def _on_table_context_menu(self, pos: QPoint) -> None:
         index = self.table_view.indexAt(pos)
         if not index.isValid():
@@ -769,7 +794,8 @@ class MainWindow(QMainWindow):
         set_header_action = menu.addAction("设为标题行")
         action = menu.exec_(self.table_view.viewport().mapToGlobal(pos))
         if action == set_header_action:
-            self._set_row_as_header(index.row())
+            source_index = self.table_proxy_model.mapToSource(index)
+            self._set_row_as_header(source_index.row())
 
     def _set_row_as_header(self, row: int) -> None:
         if self.current_original_df.empty:
@@ -868,6 +894,7 @@ class MainWindow(QMainWindow):
     def _update_preview(self, dataframe: pd.DataFrame) -> None:
         self.current_view_df = dataframe
         self.table_model.set_dataframe(dataframe)
+        self._apply_current_sort()
         self.table_view.resizeColumnsToContents()
         if dataframe.empty:
             self.summary_label.setText("未加载数据")
@@ -876,6 +903,36 @@ class MainWindow(QMainWindow):
                 f"当前预览：{len(dataframe)} 行 / {len(dataframe.columns)} 列"
             )
         self._update_ui_state()
+
+    def _apply_current_sort(self) -> None:
+        header = self.table_view.horizontalHeader()
+        if self._sorted_column is None or self.current_view_df.empty:
+            self.table_proxy_model.sort(-1)
+            header.setSortIndicatorShown(False)
+            return
+
+        if self._sorted_column >= len(self.current_view_df.columns):
+            self._sorted_column = None
+            self.table_proxy_model.sort(-1)
+            header.setSortIndicatorShown(False)
+            return
+
+        self.table_proxy_model.sort(self._sorted_column, self._sort_order)
+        header.setSortIndicatorShown(True)
+        header.setSortIndicator(self._sorted_column, self._sort_order)
+
+    def _current_sorted_view_df(self) -> pd.DataFrame:
+        dataframe = self.table_model.dataframe()
+        if dataframe.empty:
+            return dataframe.copy()
+
+        rows: list[int] = []
+        for proxy_row in range(self.table_proxy_model.rowCount()):
+            source_index = self.table_proxy_model.mapToSource(
+                self.table_proxy_model.index(proxy_row, 0)
+            )
+            rows.append(source_index.row())
+        return dataframe.iloc[rows].reset_index(drop=True).copy()
 
     def _update_ui_state(self) -> None:
         has_files = bool(self.project_config.source_files)
@@ -907,7 +964,6 @@ class MainWindow(QMainWindow):
             for line in self.split_values_edit.toPlainText().splitlines()
             if line.strip()
         ]
-        self.project_config.sort_column = self.sort_column_edit.text().strip()
         self.project_config.remove_empty_rows = self.remove_empty_rows_check.isChecked()
         self.project_config.drop_duplicates = self.drop_duplicates_check.isChecked()
         self._collect_column_rules_from_table()
@@ -922,7 +978,6 @@ class MainWindow(QMainWindow):
         )
         self._populate_split_combo()
         self.split_values_edit.setPlainText("\n".join(self.project_config.split_values))
-        self.sort_column_edit.setText(self.project_config.sort_column)
         self.remove_empty_rows_check.setChecked(self.project_config.remove_empty_rows)
         self.drop_duplicates_check.setChecked(self.project_config.drop_duplicates)
         self._refresh_columns_table()
@@ -983,6 +1038,9 @@ class MainWindow(QMainWindow):
         return f"{path}.xlsx"
 
     def _add_recent_item(self, key: str, value: str, limit: int = 8) -> None:
+        value = value.strip()
+        if not value:
+            return
         raw = self.settings.value(key, [])
         if not isinstance(raw, list):
             raw = []
@@ -997,16 +1055,27 @@ class MainWindow(QMainWindow):
 
         raw_projects = self.settings.value("recent_projects", [])
         recent_projects: list[str] = (
-            [str(item) for item in raw_projects if isinstance(item, str)]
+            [str(item).strip() for item in raw_projects if isinstance(item, str)]
             if isinstance(raw_projects, list)
             else []
         )
         raw_files = self.settings.value("recent_files", [])
         recent_files: list[str] = (
-            [str(item) for item in raw_files if isinstance(item, str)]
+            [str(item).strip() for item in raw_files if isinstance(item, str)]
             if isinstance(raw_files, list)
             else []
         )
+
+        recent_projects, removed_recent_projects = self._filter_existing_paths(
+            recent_projects
+        )
+        recent_files, removed_recent_files = self._filter_existing_paths(recent_files)
+        self.settings.setValue("recent_projects", recent_projects)
+        self.settings.setValue("recent_files", recent_files)
+        if removed_recent_projects:
+            self._log(f"已忽略 {removed_recent_projects} 个无效最近配置路径")
+        if removed_recent_files:
+            self._log(f"已忽略 {removed_recent_files} 个无效最近文件路径")
 
         self._fill_recent_menu(
             self.recent_projects_menu, recent_projects, self._open_recent_project
@@ -1016,17 +1085,17 @@ class MainWindow(QMainWindow):
         )
 
     def _fill_recent_menu(self, menu: QMenu, values: list[str], callback) -> None:
-        existing_values = [value for value in values if Path(value).exists()]
-        if not existing_values:
+        if not values:
             action = menu.addAction("暂无记录")
             action.setEnabled(False)
             return
-        for value in existing_values:
+        for value in values:
             action = menu.addAction(value)
             action.triggered.connect(lambda checked=False, path=value: callback(path))
 
     def _open_recent_project(self, path: str) -> None:
-        if not Path(path).exists():
+        path = path.strip()
+        if not self._path_exists(path):
             self._show_error(f"配置不存在：{path}")
             return
         try:
@@ -1034,6 +1103,7 @@ class MainWindow(QMainWindow):
         except Exception as exc:
             self._show_error(f"打开配置失败：{exc}")
             return
+        self._normalize_project_paths()
         self.project_path = path
         self._push_config_to_form()
         self._rebuild_file_list()
@@ -1041,7 +1111,8 @@ class MainWindow(QMainWindow):
         self.reload_active_file()
 
     def _open_recent_file(self, path: str) -> None:
-        if not Path(path).exists():
+        path = path.strip()
+        if not self._path_exists(path):
             self._show_error(f"文件不存在：{path}")
             return
         if path not in self.project_config.source_files:
@@ -1050,6 +1121,59 @@ class MainWindow(QMainWindow):
         self._rebuild_file_list()
         self._select_file_in_list(path)
         self.reload_active_file()
+
+    def _normalize_project_paths(self) -> None:
+        self.project_config.source_files = [
+            path.strip() for path in self.project_config.source_files if path.strip()
+        ]
+        self.project_config.source_files, removed_source_files = self._filter_existing_paths(
+            self.project_config.source_files
+        )
+        self.project_config.active_file = self.project_config.active_file.strip()
+        removed_active_file = 0
+        if (
+            self.project_config.active_file
+            and self.project_config.active_file not in self.project_config.source_files
+            and self._path_exists(self.project_config.active_file)
+        ):
+            self.project_config.source_files.append(self.project_config.active_file)
+        if not self._path_exists(self.project_config.active_file):
+            removed_active_file = 1 if self.project_config.active_file else 0
+            self.project_config.active_file = (
+                self.project_config.source_files[0]
+                if self.project_config.source_files
+                else ""
+            )
+        if self.project_config.output_dir:
+            self.project_config.output_dir = self.project_config.output_dir.strip()
+        removed_total = removed_source_files + removed_active_file
+        if removed_total:
+            self._log(f"已忽略 {removed_total} 个配置中的无效路径")
+
+    def _filter_existing_paths(self, values: list[str]) -> tuple[list[str], int]:
+        deduped = self._dedupe_paths(values)
+        existing = [value for value in deduped if value and self._path_exists(value)]
+        return existing, len(deduped) - len(existing)
+
+    def _dedupe_paths(self, values: list[str]) -> list[str]:
+        deduped: list[str] = []
+        seen: set[str] = set()
+        for value in values:
+            if value in seen:
+                continue
+            seen.add(value)
+            deduped.append(value)
+        return deduped
+
+    def _path_exists(self, path: str) -> bool:
+        if not path:
+            return False
+        try:
+            return Path(path).exists()
+        except OSError:
+            return False
+        except ValueError:
+            return False
 
 
 def _wrap_layout(layout: QHBoxLayout) -> QWidget:

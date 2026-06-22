@@ -52,15 +52,12 @@ def clean_dataframe(
     dataframe: pd.DataFrame,
     remove_empty_rows: bool = True,
     drop_duplicates: bool = False,
-    sort_column: str = "",
 ) -> pd.DataFrame:
     cleaned = dataframe.copy()
     if remove_empty_rows:
         cleaned = cleaned.dropna(how="all")
     if drop_duplicates:
         cleaned = cleaned.drop_duplicates()
-    if sort_column and sort_column in cleaned.columns:
-        cleaned = cleaned.sort_values(by=sort_column, kind="stable", na_position="last")
     return cleaned.reset_index(drop=True)
 
 
@@ -149,7 +146,6 @@ def merge_files(
     sheet_name: str = "",
     remove_empty_rows: bool = True,
     drop_duplicates: bool = False,
-    sort_column: str = "",
 ) -> pd.DataFrame:
     frames: list[pd.DataFrame] = []
     for file_path in source_files:
@@ -158,7 +154,6 @@ def merge_files(
             frame,
             remove_empty_rows=remove_empty_rows,
             drop_duplicates=False,
-            sort_column="",
         )
         frames.append(frame)
 
@@ -170,7 +165,6 @@ def merge_files(
         merged,
         remove_empty_rows=remove_empty_rows,
         drop_duplicates=drop_duplicates,
-        sort_column=sort_column,
     )
 
 
